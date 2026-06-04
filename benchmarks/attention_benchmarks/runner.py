@@ -33,7 +33,7 @@ from vllm.v1.attention.backends.utils import (
     get_kv_cache_layout,
     set_kv_cache_layout,
 )
-from vllm.v1.kv_cache_interface import FullAttentionSpec
+from vllm.v1.kv_cache_interface import FullAttentionSpec, get_kv_quant_mode
 
 # ============================================================================
 # Backend Configuration
@@ -223,6 +223,7 @@ def _create_backend_impl(
         num_kv_heads=config.num_kv_heads,
         head_size=config.head_dim,
         dtype=dtype,
+        kv_quant_mode=get_kv_quant_mode(config.kv_cache_dtype),
     )
 
     layer = MockLayer(device, kv_cache_spec=kv_cache_spec)
@@ -530,6 +531,7 @@ def run_attention_benchmark(config: BenchmarkConfig) -> BenchmarkResult:
                 num_kv_heads=config.num_kv_heads,
                 head_size=config.head_dim,
                 dtype=dtype,
+                kv_quant_mode=get_kv_quant_mode(config.kv_cache_dtype),
             )
 
             builder = _create_metadata_builder(
